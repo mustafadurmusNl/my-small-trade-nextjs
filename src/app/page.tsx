@@ -20,18 +20,23 @@ export default async function Home() {
     <main className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Shop Our Products</h1>
 
+      {/* Adjust grid layout for responsive behavior */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="relative h-64 w-full">
+          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+            {/* Adjusting image container to handle aspect ratio */}
+            <div className="relative w-full h-64">
               <Image
                 src={product.image || "/placeholder.svg"}
                 alt={product.title}
-                fill
-                className="object-contain p-4"
+                layout="intrinsic"
+                width={500}  // Set a width for better control
+                height={500} // Set a height to maintain aspect ratio
+                objectFit="contain"
+                className="p-4"
               />
             </div>
-            <div className="p-4">
+            <div className="p-4 flex-grow">
               <p className="text-sm text-gray-500 mb-1">{product.category}</p>
               <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{product.title}</h3>
               <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
@@ -53,4 +58,3 @@ async function getProducts(): Promise<Product[]> {
   }
   return res.json()
 }
-
