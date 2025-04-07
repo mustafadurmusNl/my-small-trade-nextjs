@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import CategoryFilter from "@/components/CategoryFilter"
+import styles from "./styles.module.css"
 
 interface Product {
   id: number
@@ -20,9 +21,11 @@ interface Product {
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [products, setProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchProducts() {
+      setIsLoading(true)
       try {
         const url = selectedCategory
           ? `https://fakestoreapi.com/products/category/${encodeURIComponent(selectedCategory)}`
@@ -35,6 +38,8 @@ export default function Home() {
         setProducts(data)
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -42,37 +47,53 @@ export default function Home() {
   }, [selectedCategory])
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Shop Our Products</h1>
+    <main>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Shop Our Products</h1>
+        <p className="text-gray-600">Discover our curated collection of high-quality items</p>
+      </div>
 
-      {/* Category Filter */}
+      {/* Category filter */}
       <CategoryFilter selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
 
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+        </div>
+      )}
+
       {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-            <div className="relative w-full h-64">
-              <Image
-                src={product.image || "/placeholder.svg"}
-                alt={product.title}
-                width={500}
-                height={500}
-                objectFit="contain"
-                className="p-4"
-              />
+      {!isLoading && (
+        <div className={styles.productGrid}>
+          {products.map((product) => (
+            <div key={product.id} className={styles.productCard}>
+              <div className={styles.imageContainer}>
+                <Image
+                  src={product.image || "/placeholder.svg"}
+                  alt={product.title}
+                  fill
+                  className={styles.productImage}
+                />
+              </div>
+              <div className={styles.productInfo}>
+                <p className={styles.category}>{product.category}</p>
+                <h3 className={styles.title}>{product.title}</h3>
+                <p className={styles.price}>${product.price.toFixed(2)}</p>
+              </div>
             </div>
-            <div className="p-4 flex-grow">
-              <p className="text-sm text-gray-500 mb-1">{product.category}</p>
-              <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{product.title}</h3>
-              <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
-              <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors">
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!isLoading && products.length === 0 && (
+        <div className="text-center py-20">
+          <h3 className="text-xl font-medium text-gray-900">No products found</h3>
+          <p className="text-gray-600 mt-2">Try selecting a different category</p>
+        </div>
+      )}
     </main>
   )
 }
+
