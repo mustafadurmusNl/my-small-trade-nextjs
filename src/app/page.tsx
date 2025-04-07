@@ -21,9 +21,27 @@ interface Product {
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("")
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    // Fetch categories once on mount
+    async function fetchCategories() {
+      try {
+        const res = await fetch("https://fakestoreapi.com/products/categories")
+        if (!res.ok) throw new Error("Failed to fetch categories")
+        const data: string[] = await res.json()
+        setCategories(data)
+      } catch (error) {
+        console.error("Error fetching categories:", error)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    // Fetch products on category change
     async function fetchProducts() {
       setIsLoading(true)
       try {
@@ -54,7 +72,11 @@ export default function Home() {
       </div>
 
       {/* Category filter */}
-      <CategoryFilter selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
+      <CategoryFilter
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+        categories={categories}
+      />
 
       {/* Loading state */}
       {isLoading && (
@@ -96,4 +118,3 @@ export default function Home() {
     </main>
   )
 }
-

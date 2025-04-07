@@ -1,15 +1,14 @@
-"use client"
+// "use client"
 
 import styles from "@/app/styles.module.css"
 
 interface CategoryFilterProps {
   selectedCategory: string
   onSelectCategory: (category: string) => void
+  categories: string[]
 }
 
-const categories = ["electronics", "jewelery", "men's clothing", "women's clothing"]
-
-export default function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryFilterProps) {
+export default function CategoryFilter({ selectedCategory, onSelectCategory, categories }: CategoryFilterProps) {
   return (
     <div className={styles.categoryContainer}>
       <div className={styles.categoryList}>
@@ -37,4 +36,3 @@ export default function CategoryFilter({ selectedCategory, onSelectCategory }: C
     </div>
   )
 }
-
