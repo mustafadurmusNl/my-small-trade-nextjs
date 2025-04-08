@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import CategoryFilter from "@/components/CategoryFilter"
 import styles from "./styles.module.css"
 
@@ -25,7 +26,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch categories once on mount
     async function fetchCategories() {
       try {
         const res = await fetch("https://fakestoreapi.com/products/categories")
@@ -41,7 +41,6 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    // Fetch products on category change
     async function fetchProducts() {
       setIsLoading(true)
       try {
@@ -71,25 +70,22 @@ export default function Home() {
         <p className="text-gray-600">Discover our curated collection of high-quality items</p>
       </div>
 
-      {/* Category filter */}
       <CategoryFilter
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         categories={categories}
       />
 
-      {/* Loading state */}
       {isLoading && (
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
         </div>
       )}
 
-      {/* Product Grid */}
       {!isLoading && (
         <div className={styles.productGrid}>
           {products.map((product) => (
-            <div key={product.id} className={styles.productCard}>
+            <Link key={product.id} href={`/product/${product.id}`} className={styles.productCard}>
               <div className={styles.imageContainer}>
                 <Image
                   src={product.image || "/placeholder.svg"}
@@ -103,12 +99,11 @@ export default function Home() {
                 <h3 className={styles.title}>{product.title}</h3>
                 <p className={styles.price}>${product.price.toFixed(2)}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
 
-      {/* Empty state */}
       {!isLoading && products.length === 0 && (
         <div className="text-center py-20">
           <h3 className="text-xl font-medium text-gray-900">No products found</h3>

@@ -1,7 +1,9 @@
+/* globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Global styles */
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-rgb: 245, 245, 245;
